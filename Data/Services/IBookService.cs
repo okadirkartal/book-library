@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using BookLibrary.Data;
-
 namespace BookLibrary.Data
 {
     public interface IBookService
