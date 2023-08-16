@@ -1,4 +1,5 @@
-export interface AppState
-{
-    readonly books: Book[];
+import { Book } from "../models/book";
+
+export interface AppState {
+  readonly books: Book[];
 }

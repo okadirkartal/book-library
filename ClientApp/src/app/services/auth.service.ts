@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import createAuth0Client from '@auth0/auth0-spa-js';
+import createAuth0Client, { GetUserOptions } from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 import { from, of, Observable, BehaviorSubject, combineLatest, throwError } from 'rxjs';
 import { tap, catchError, concatMap, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,8 @@ export class AuthService {
   // Create an observable of Auth0 instance of client
   auth0Client$ = (from(
     createAuth0Client({
-      domain: "dev-1wtrz3-6.auth0.com",
-      client_id: "rRY5lXOu0zxjQCSDIBkral6Kv8ItECUG",
+      domain: environment.AUTH_DOMAIN,
+      client_id: environment.CLIENT_ID,
       redirect_uri: `${window.location.origin}/callback`
     })
   ) as Observable<Auth0Client>).pipe(
@@ -35,13 +36,13 @@ export class AuthService {
   private userProfileSubject$ = new BehaviorSubject<any>(null);
   userProfile$ = this.userProfileSubject$.asObservable();
   // Create a local property for login status
-  loggedIn: boolean = null;
+  loggedIn: boolean = false;
 
   constructor(private router: Router) { }
 
   // When calling, options can be passed if desired
   // https://auth0.github.io/auth0-spa-js/classes/auth0client.html#getuser
-  getUser$(options?): Observable<any> {
+  getUser$(options?: GetUserOptions | undefined): Observable<any> {
     return this.auth0Client$.pipe(
       concatMap((client: Auth0Client) => from(client.getUser(options))),
       tap(user => this.userProfileSubject$.next(user))
@@ -113,7 +114,7 @@ export class AuthService {
     this.auth0Client$.subscribe((client: Auth0Client) => {
       // Call method to log out
       client.logout({
-        client_id: "rRY5lXOu0zxjQCSDIBkral6Kv8ItECUG",
+        client_id: environment.CLIENT_ID,
         returnTo: `${window.location.origin}`
       });
     });

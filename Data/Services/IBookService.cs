@@ -1,12 +1,12 @@
-using System.Collections.Generic;
-namespace BookLibrary.Data
+using BookLibrary.Data.Models;
+
+namespace BookLibrary.Data.Services;
+
+public interface IBookService
 {
-    public interface IBookService
-    {
-        List<Book> GetAllBooks();
-        Book GetBookById(int id);
-        void UpdateBook(int id, Book newBook);
-        void DeleteBook(int id);
-        void AddBook(Book newBook);
-    }
+    Task<IReadOnlyCollection<Book>> GetAllBooks();
+    Task<Book> GetBookById(Guid id);
+    Task UpdateBook(Guid id, Book newBook);
+    Task DeleteBook(Guid id);
+    Task AddBook(Book newBook);
 }

@@ -1,43 +1,60 @@
-using System.Collections.Generic;
-using System.Linq;
+using BookLibrary.Data.Models;
+using BookLibrary.Data.Repositories;
 
-namespace BookLibrary.Data
+namespace BookLibrary.Data.Services;
+
+public class BookService : IBookService
 {
-    public class BookService : IBookService
+    private readonly IRepository<Book> _repository;
+
+    public BookService(IRepository<Book> repository)
     {
-        public void AddBook(Book newBook)
-        {
-            Data.Books.Add(newBook);
-        }
+        this._repository = repository;
+    }
+    public async Task<IReadOnlyCollection<Book>> GetAllBooks()
+    {
+        return await _repository.GetAllAsync();
+    }
 
-        public void DeleteBook(int id)
-        {
-            var book = Data.Books.FirstOrDefault(n => n.Id == id);
-            Data.Books.Remove(book);
-        }
+    public async Task<Book> GetBookById(Guid id)
+    {
+        return await _repository.GetAsync(id);
+    }
 
-        public List<Book> GetAllBooks()
+    public async Task UpdateBook(Guid id, Book newBook)
+    {
+        var oldBook = await _repository.GetAsync(id);
+        
+        if (oldBook != null)
         {
-            return Data.Books.ToList();
-        }
+            oldBook.Title = newBook.Title;
+            oldBook.Author = newBook.Author;
+            oldBook.Description = newBook.Description;
+            oldBook.Rate = newBook.Rate;
+            oldBook.DateStart = newBook.DateStart;
+            oldBook.DateRead = newBook.DateRead;
 
-        public Book GetBookById(int id)
-        {
-            return Data.Books.FirstOrDefault(n => n.Id == id);
+            await _repository.UpdateAsync(oldBook);
         }
+    }
 
-        public void UpdateBook(int id, Book newBook)
+    public async  Task DeleteBook(Guid id)
+    {
+        await _repository.RemoveAsync(id);
+    }
+
+    public async Task AddBook(Book newBook)
+    {
+        var book = new Book
         {
-            var oldBook = Data.Books.FirstOrDefault(n => n.Id == id);
-            if(oldBook != null)
-            {
-                oldBook.Title = newBook.Title;
-                oldBook.Author = newBook.Author;
-                oldBook.Description = newBook.Description;
-                oldBook.Rate = newBook.Rate;
-                oldBook.DateStart = newBook.DateStart;
-                oldBook.DateRead = newBook.DateRead;
-            }
-        }
+            Title = newBook.Title,
+            Description = newBook.Description,
+            Author = newBook.Author,
+            Rate = newBook.Rate,
+            DateStart = newBook.DateStart,
+            DateRead = newBook.DateRead
+        };
+
+        await _repository.CreateAsync(book);
     }
 }

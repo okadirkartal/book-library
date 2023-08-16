@@ -11,7 +11,7 @@ export class NavMenuComponent implements OnInit {
 
   constructor(private auth: AuthService){}
 
-  ngOnInit(){
+  ngOnInit(): void {
     this.auth.handleAuthCallback();
   }
 
