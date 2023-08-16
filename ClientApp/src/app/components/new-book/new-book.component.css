@@ -1,0 +1,7 @@
+.add-book {
+  padding: 0 20% 0 20%;
+}
+
+.required:after {
+  color: red;
+}
